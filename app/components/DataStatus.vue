@@ -81,6 +81,7 @@ const messages: Record<RefreshStatus, string> = {
 }
 
 .data-status a.btn {
+  color: inherit;
   text-decoration: none;
 }
 
