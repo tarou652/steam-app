@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   // GitHub Pages で配信するため SPA として静的生成する
   ssr: false,
   modules: ['@pinia/nuxt', '@nuxtjs/storybook'],
+  css: ['~/assets/css/main.css'],
   devtools: { enabled: true },
   app: {
     // Actions でリポジトリ名から設定する（例: /steam-app/）

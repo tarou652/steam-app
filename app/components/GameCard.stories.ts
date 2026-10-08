@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@nuxtjs/storybook'
 import GameCard from './GameCard.vue'
 
 const meta = {
-  title: 'GameCard',
+  title: 'Game/GameCard',
   component: GameCard,
 } satisfies Meta<typeof GameCard>
 
