@@ -1,0 +1,27 @@
+# Nuxt
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node
+node_modules
+*.log
+
+# Storybook
+storybook-static
+*storybook.log
+
+# Env
+.env
+.env.*
+!.env.example
+
+# 生成データ（npm run fetch で作る）
+public/data/library.json
+
+# Misc
+.DS_Store
+.idea

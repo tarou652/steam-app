@@ -189,7 +189,8 @@ appid から URL を組み立てる（JSON には持たない）。
 | 状態管理 | Pinia または `useState` + composable |
 | URL 圧縮 | `lz-string`（`compressToEncodedURIComponent`） |
 | PNG 出力 | `modern-screenshot` / `html-to-image` |
-| Storybook | `@nuxtjs/storybook`（Nuxt 4 対応状況によっては `@storybook/vue3-vite`） |
+| Storybook | `@nuxtjs/storybook` 10（Storybook 10、Nuxt 4 対応） |
+| TypeScript | 6 系（7 系は vue-tsc が未対応のため） |
 | データ取得スクリプト | Node.js + TypeScript（`tsx` で実行） |
 | テスト | Vitest |
 
