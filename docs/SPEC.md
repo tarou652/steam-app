@@ -1,4 +1,4 @@
-# Steam Tier Maker 仕様書（ドラフト v0.1）
+# Steam Tier Maker 仕様書（v0.2）
 
 ## 1. コンセプト
 
@@ -58,6 +58,29 @@
 - 実行タイミング：`schedule`（1日1回）+ `workflow_dispatch`（手動）+ main への push
 - ローカル開発：`.env` にキーを置いて `npm run fetch` で JSON を生成。キーがなくても動くようにモック JSON も用意する
 
+### 3.1 画面からのデータ更新
+
+ゲームを買った・ウィッシュリストに追加した直後に、画面のボタンから Actions を起動して `library.json` を更新できるようにする。
+
+```
+画面の「データを更新」ボタン
+  │  GitHub REST API（CORS 対応）
+  │  POST /repos/{owner}/{repo}/actions/workflows/deploy.yml/dispatches
+  ▼
+GitHub Actions が実行 → 新しい library.json でデプロイ
+  │
+  ▼
+画面で実行状況をポーリング表示（GET /repos/{owner}/{repo}/actions/runs）
+完了したら「再読み込み」を促す
+```
+
+- GitHub API を呼ぶにはトークンが必要。静的サイトに埋め込めないので、**利用者本人が Fine-grained PAT を設定画面で入力**し、localStorage に保存する
+  - 権限は「対象リポジトリのみ / Actions: Read and write」に絞る
+  - トークンはブラウザの外へは GitHub API 以外に送らない
+- `owner` / `repo` はビルド時に Actions の `GITHUB_REPOSITORY` から埋め込む（fork しても自動で合う）
+- トークン未設定時は、Actions のページへのリンク（そこから手動で Run workflow）を表示する
+- 画面には `library.json` の `fetchedAt`（最終更新日時）を表示する
+
 ## 4. データ
 
 ### 4.1 library.json
@@ -110,6 +133,11 @@ appid から URL を組み立てる（JSON には持たない）。
 - 並び替え：プレイ時間順 / 名前順 / 最終プレイ順
 - 「プール全部を選ばずに、絞り込んだ結果から作る」ことができる（例：プレイ時間 1 時間以上だけ）
 
+**データ更新**
+- 最終更新日時の表示
+- 「データを更新」ボタンで Actions を起動し、実行状況を表示（§3.1）
+- 設定画面で GitHub トークンを入力・削除
+
 **保存**
 - localStorage に保存（複数の Tier 表を保持、一覧から開く・削除）
 
@@ -117,13 +145,14 @@ appid から URL を組み立てる（JSON には持たない）。
 - **URL 共有**：Tier 表の状態（タイトル・段・各段の appid）を圧縮して URL のクエリに入れる
   - サーバー不要。appid は数値なので 100 本程度なら URL に収まる見込み
   - 共有 URL を開いた人は閲覧のみ。「コピーして編集」で自分の localStorage に取り込める
-- **画像エクスポート**：Tier 表を PNG でダウンロード（SNS 投稿用）
+- **画像エクスポート**：Tier 表を PNG でダウンロード（SNS 投稿用）。v1 の必須機能
 
-### 5.2 v2 以降の候補
+### 5.2 v1 ではやらないこと（最小構成のため）
 
-- JSON のエクスポート / インポート（バックアップ用）
-- 所持もウィッシュリストもしていないゲームを appid で手動追加
+- JSON のエクスポート / インポート
+- 所持もウィッシュリストもしていないゲームの手動追加
 - カードにプレイ時間を表示するオプション
+- カードの縦長 / 横長の切り替え（v1 は縦長固定）
 
 ## 6. 画面構成
 
@@ -132,6 +161,7 @@ appid から URL を組み立てる（JSON には持たない）。
 | `/` | 保存済み Tier 表の一覧 + 新規作成 |
 | `/edit?id=xxx` | Tier 表の編集画面（上：Tier 表、下：プール） |
 | `/view?t=<圧縮データ>` | 共有された Tier 表の閲覧 |
+| `/settings` | GitHub トークンの設定、データ更新 |
 
 - GitHub Pages は SPA のフォールバックを持たないため、動的なパスは使わずクエリで渡す
   （`/edit/123` のようなパスにすると直接アクセス時に 404 になる）
@@ -147,6 +177,7 @@ appid から URL を組み立てる（JSON には持たない）。
 | `TierRowEditor` | 段のラベル・色の編集 |
 | `GamePool` | 未配置ゲームの一覧 + 絞り込み・検索・並び替え |
 | `TierListCard` | 一覧画面の 1 件 |
+| `DataStatus` | 最終更新日時 + 更新ボタン + 実行状況 |
 
 - Storybook はモック JSON で動かす（Steam API に依存しない）
 
@@ -164,7 +195,7 @@ appid から URL を組み立てる（JSON には持たない）。
 
 ## 9. リスク・要確認事項
 
-1. **PNG 出力時の CORS**：Steam CDN の画像を canvas に描くには、CDN が `Access-Control-Allow-Origin` を返す必要がある。返さない場合は、Actions で画像も取得してサイトに同梱する（数百本 × 数十 KB なら許容範囲）
+1. **PNG 出力時の CORS**：PNG 出力は v1 の必須機能。Steam CDN の画像を canvas に描くには、CDN が `Access-Control-Allow-Origin` を返す必要がある。実装の最初にローカルで検証し、返さない場合は Actions で画像も取得してサイトに同梱する（数百本 × 数十 KB なら許容範囲）
 2. **ウィッシュリストのゲーム名取得**：`IStoreBrowseService/GetItems` の仕様が変わる可能性。代替は `store.steampowered.com/api/appdetails`（レート制限が厳しい）
 3. **プロフィールの公開設定**：所持ゲーム・ウィッシュリストが公開になっていないと取得できない。README に手順を書く
 4. **公開されるデータ**：`library.json` は GitHub Pages 上で誰でも見られる（ただし元々公開プロフィールの情報）
@@ -176,4 +207,5 @@ appid から URL を組み立てる（JSON には持たない）。
 2. Settings → Secrets に `STEAM_API_KEY` と `STEAM_ID` を登録
 3. Settings → Pages で Source を「GitHub Actions」にする
 4. Actions タブから「Deploy」を手動実行
+   （2回目以降は、画面から更新したければ Fine-grained PAT を発行して設定画面に入力）
 5. `https://<ユーザー名>.github.io/<リポジトリ名>/` で使える
