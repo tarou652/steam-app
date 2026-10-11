@@ -1,0 +1,14 @@
+{
+  "fetchedAt": "2026-10-01T00:00:00.000Z",
+  "steamId": "76561197960287930",
+  "games": [
+    { "appid": 1145360, "name": "Hades", "owned": true, "wishlisted": false, "playtimeMinutes": 4210, "lastPlayedAt": "2026-09-20T12:00:00.000Z" },
+    { "appid": 413150, "name": "Stardew Valley", "owned": true, "wishlisted": false, "playtimeMinutes": 9030, "lastPlayedAt": "2026-08-02T12:00:00.000Z" },
+    { "appid": 367520, "name": "Hollow Knight", "owned": true, "wishlisted": false, "playtimeMinutes": 3120, "lastPlayedAt": "2025-12-24T12:00:00.000Z" },
+    { "appid": 504230, "name": "Celeste", "owned": true, "wishlisted": false, "playtimeMinutes": 1260, "lastPlayedAt": "2025-05-05T12:00:00.000Z" },
+    { "appid": 646570, "name": "Slay the Spire", "owned": true, "wishlisted": false, "playtimeMinutes": 7440, "lastPlayedAt": "2026-07-14T12:00:00.000Z" },
+    { "appid": 1794680, "name": "Vampire Survivors", "owned": true, "wishlisted": false, "playtimeMinutes": 0 },
+    { "appid": 1245620, "name": "ELDEN RING", "owned": false, "wishlisted": true, "wishlistPriority": 1 },
+    { "appid": 1145350, "name": "Hades II", "owned": false, "wishlisted": true, "wishlistPriority": 2 }
+  ]
+}
